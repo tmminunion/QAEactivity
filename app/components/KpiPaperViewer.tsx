@@ -20,6 +20,7 @@ import {
   BarChart3,
   Layers,
   Sparkles,
+  Car,
 } from 'lucide-react';
 
 interface KpiPaperViewerProps {
@@ -28,28 +29,70 @@ interface KpiPaperViewerProps {
   compact?: boolean;
 }
 
+type ModelKey = 'innova' | 'fortuner' | 'zenix';
+
+const MODEL_META: {
+  key: ModelKey;
+  label: string;
+  color: string;
+  dotClass: string;
+  textClass: string;
+  cardClass: string;
+}[] = [
+  {
+    key: 'innova',
+    label: 'Innova',
+    color: '#38bdf8',
+    dotClass: 'bg-sky-400',
+    textClass: 'text-sky-300',
+    cardClass: 'border-sky-500/25 bg-sky-500/[0.06]',
+  },
+  {
+    key: 'fortuner',
+    label: 'Fortuner',
+    color: '#f59e0b',
+    dotClass: 'bg-amber-400',
+    textClass: 'text-amber-300',
+    cardClass: 'border-amber-500/25 bg-amber-500/[0.06]',
+  },
+  {
+    key: 'zenix',
+    label: 'Zenix',
+    color: '#a78bfa',
+    dotClass: 'bg-violet-400',
+    textClass: 'text-violet-300',
+    cardClass: 'border-violet-500/25 bg-violet-500/[0.06]',
+  },
+];
+
 export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperViewerProps) {
   const pocket: PocketData = POCKETS[col]?.[row] ?? POCKETS.quality.main;
   const colMeta = COLUMNS.find((c) => c.slug === col) ?? COLUMNS[0];
   const theme = THEME[col] ?? THEME.quality;
 
   const [shiftFilter, setShiftFilter] = useState<'all' | 'red' | 'white'>('all');
+  const [modelFilter, setModelFilter] = useState<'all' | ModelKey>('all');
   const [kaizenFilter, setKaizenFilter] = useState<'all' | 'Selesai' | 'Proses' | 'Belum'>('all');
 
-  // Compute chart geometry for Main & Sub KPI
+  const isModelSeries = Boolean(pocket.series?.models);
+
   const chartModel = useMemo(() => {
     if (!pocket.series) return null;
     const s = pocket.series;
+
+    const allSeriesArrays: (number | null)[][] = s.models
+      ? [s.models.innova, s.models.fortuner, s.models.zenix]
+      : [s.red ?? [], s.white ?? []];
+
     const vals = [
-      ...s.red.filter((v): v is number => v !== null),
-      ...s.white.filter((v): v is number => v !== null),
+      ...allSeriesArrays.flat().filter((v): v is number => v !== null),
       s.target,
     ];
     const minRaw = Math.min(...vals);
     const maxRaw = Math.max(...vals);
     const span = Math.max(maxRaw - minRaw, s.dec > 0 ? 0.1 : 2);
     const yMin = Math.max(0, minRaw - span * 0.25);
-    const yMax = maxRaw + span * 0.25;
+    const yMax = Math.min(s.unit === '%' ? 100.5 : Infinity, maxRaw + span * 0.25);
 
     const W = 760;
     const H = 250;
@@ -73,8 +116,8 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
       return d.trim();
     };
 
-    const latestRed = [...s.red].reverse().find((v) => v !== null) ?? null;
-    const latestWhite = [...s.white].reverse().find((v) => v !== null) ?? null;
+    const latestOf = (arr?: (number | null)[]) =>
+      arr ? [...arr].reverse().find((v) => v !== null) ?? null : null;
 
     return {
       W,
@@ -87,11 +130,27 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
       yMax,
       xAt,
       yAt,
-      redPath: buildPath(s.red),
-      whitePath: buildPath(s.white),
       targetY: yAt(s.target),
-      latestRed,
-      latestWhite,
+      // Shift mode
+      redPath: buildPath(s.red ?? []),
+      whitePath: buildPath(s.white ?? []),
+      latestRed: latestOf(s.red),
+      latestWhite: latestOf(s.white),
+      // Model mode (Innova, Fortuner, Zenix)
+      modelPaths: s.models
+        ? {
+            innova: buildPath(s.models.innova),
+            fortuner: buildPath(s.models.fortuner),
+            zenix: buildPath(s.models.zenix),
+          }
+        : null,
+      latestModels: s.models
+        ? {
+            innova: latestOf(s.models.innova),
+            fortuner: latestOf(s.models.fortuner),
+            zenix: latestOf(s.models.zenix),
+          }
+        : null,
     };
   }, [pocket.series]);
 
@@ -134,7 +193,35 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
         </div>
 
         {/* Interactive Filter Controls */}
-        {(pocket.template === 'main' || pocket.template === 'sub') && (
+        {(pocket.template === 'main' || pocket.template === 'sub') && isModelSeries && (
+          <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/90 p-1 text-xs">
+            <button
+              onClick={() => setModelFilter('all')}
+              className={`rounded-lg px-2.5 py-1 font-semibold transition cursor-pointer ${
+                modelFilter === 'all'
+                  ? 'bg-cyan-500 text-slate-950'
+                  : 'text-slate-300 hover:bg-white/10'
+              }`}
+            >
+              Semua Model
+            </button>
+            {MODEL_META.map((m) => (
+              <button
+                key={m.key}
+                onClick={() => setModelFilter(m.key)}
+                className={`rounded-lg px-2.5 py-1 font-semibold transition cursor-pointer ${
+                  modelFilter === m.key
+                    ? 'bg-cyan-500 text-slate-950'
+                    : 'text-slate-300 hover:bg-white/10'
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {(pocket.template === 'main' || pocket.template === 'sub') && !isModelSeries && (
           <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/90 p-1 text-xs">
             {(['all', 'red', 'white'] as const).map((mode) => (
               <button
@@ -173,276 +260,494 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
 
       {/* Body Content by Template */}
       <div className={compact ? 'p-4 sm:p-5 space-y-4' : 'p-5 sm:p-6 space-y-6'}>
-        {/* 1. MAIN / SUB KPI CHART & TABLE */}
-        {(pocket.template === 'main' || pocket.template === 'sub') && pocket.series && chartModel && (
-          <div className="space-y-5">
-            {/* Summary KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                    Target FY26
+        {/* 1A. MODEL-BASED MAIN KPI (INNOVA / FORTUNER / ZENIX - OK RATIO) */}
+        {(pocket.template === 'main' || pocket.template === 'sub') &&
+          isModelSeries &&
+          pocket.series?.models &&
+          chartModel?.modelPaths &&
+          chartModel.latestModels && (
+            <div className="space-y-5">
+              {/* 4 Summary Cards: Target + Innova + Fortuner + Zenix */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 flex items-center justify-between">
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                      Target OK Ratio
+                    </div>
+                    <div className="mt-1 text-2xl font-black text-white font-mono">
+                      {pocket.series.lower ? '≤ ' : '≥ '}
+                      {pocket.series.target.toFixed(pocket.series.dec)} {pocket.series.unit}
+                    </div>
                   </div>
-                  <div className="mt-1 text-2xl font-black text-white font-mono">
-                    {pocket.series.lower ? '≤ ' : '≥ '}
-                    {pocket.series.target.toFixed(pocket.series.dec)} {pocket.series.unit}
-                  </div>
+                  <Target className="w-7 h-7 text-cyan-400 opacity-80" />
                 </div>
-                <Target className="w-7 h-7 text-cyan-400 opacity-80" />
-              </div>
 
-              <div className="rounded-2xl border border-rose-500/25 bg-rose-500/[0.06] p-3.5 flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-rose-300">
-                    Aktual Terakhir · Regu Red
-                  </div>
-                  <div className="mt-1 text-2xl font-black text-white font-mono">
-                    {chartModel.latestRed !== null
-                      ? `${chartModel.latestRed.toFixed(pocket.series.dec)} ${pocket.series.unit}`
-                      : '-'}
-                  </div>
-                </div>
-                {isTargetMet(chartModel.latestRed, pocket.series.target, pocket.series.lower) ? (
-                  <TrendingUp className="w-7 h-7 text-emerald-400" />
-                ) : (
-                  <TrendingDown className="w-7 h-7 text-amber-400" />
-                )}
-              </div>
-
-              <div className="rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] p-3.5 flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-sky-300">
-                    Aktual Terakhir · Regu White
-                  </div>
-                  <div className="mt-1 text-2xl font-black text-white font-mono">
-                    {chartModel.latestWhite !== null
-                      ? `${chartModel.latestWhite.toFixed(pocket.series.dec)} ${pocket.series.unit}`
-                      : '-'}
-                  </div>
-                </div>
-                {isTargetMet(chartModel.latestWhite, pocket.series.target, pocket.series.lower) ? (
-                  <TrendingUp className="w-7 h-7 text-emerald-400" />
-                ) : (
-                  <TrendingDown className="w-7 h-7 text-amber-400" />
-                )}
-              </div>
-            </div>
-
-            {/* SVG Chart */}
-            <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
-              <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-                <div className="flex items-center gap-4">
-                  {(shiftFilter === 'all' || shiftFilter === 'red') && (
-                    <span className="flex items-center gap-1.5 font-semibold text-rose-300">
-                      <span className="h-2.5 w-2.5 rounded-full bg-rose-500" /> Regu Red
-                    </span>
-                  )}
-                  {(shiftFilter === 'all' || shiftFilter === 'white') && (
-                    <span className="flex items-center gap-1.5 font-semibold text-sky-300">
-                      <span className="h-2.5 w-2.5 rounded-full bg-sky-400" /> Regu White
-                    </span>
-                  )}
-                  <span className="flex items-center gap-1.5 font-semibold text-emerald-300">
-                    <span className="h-0.5 w-4 border-t-2 border-dashed border-emerald-400" /> Target (
-                    {pocket.series.target})
-                  </span>
-                </div>
-                <span className="font-mono text-[11px] text-slate-400">
-                  Satuan: {pocket.series.unit} ({pocket.series.lower ? 'Makin Kecil Makin Baik' : 'Makin Besar Makin Baik'})
-                </span>
-              </div>
-
-              <svg
-                viewBox={`0 0 ${chartModel.W} ${chartModel.H}`}
-                className="w-full h-auto max-h-[280px] overflow-visible"
-              >
-                {/* Horizontal grid lines */}
-                {[0, 0.25, 0.5, 0.75, 1].map((t) => {
-                  const val = chartModel.yMin + t * (chartModel.yMax - chartModel.yMin);
-                  const y = chartModel.yAt(val);
+                {MODEL_META.map((m) => {
+                  const val = chartModel.latestModels![m.key];
+                  const ok = isTargetMet(val, pocket.series!.target, pocket.series!.lower);
                   return (
-                    <g key={t}>
-                      <line
-                        x1={chartModel.padL}
-                        y1={y}
-                        x2={chartModel.W - chartModel.padR}
-                        y2={y}
-                        stroke="rgba(255,255,255,0.08)"
-                        strokeWidth="1"
-                      />
-                      <text
-                        x={chartModel.padL - 8}
-                        y={y + 4}
-                        textAnchor="end"
-                        className="fill-slate-400 text-[10px] font-mono"
-                      >
-                        {val.toFixed(pocket.series!.dec)}
-                      </text>
-                    </g>
+                    <div
+                      key={m.key}
+                      className={`rounded-2xl border p-3.5 flex items-center justify-between ${m.cardClass}`}
+                    >
+                      <div>
+                        <div
+                          className={`text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5 ${m.textClass}`}
+                        >
+                          <Car className="w-3.5 h-3.5" />
+                          OK Ratio · {m.label}
+                        </div>
+                        <div className="mt-1 text-2xl font-black text-white font-mono">
+                          {val !== null ? `${val.toFixed(pocket.series!.dec)}${pocket.series!.unit}` : '-'}
+                        </div>
+                      </div>
+                      {ok ? (
+                        <TrendingUp className="w-7 h-7 text-emerald-400" />
+                      ) : (
+                        <TrendingDown className="w-7 h-7 text-amber-400" />
+                      )}
+                    </div>
                   );
                 })}
+              </div>
 
-                {/* Target Dashed Line */}
-                <line
-                  x1={chartModel.padL}
-                  y1={chartModel.targetY}
-                  x2={chartModel.W - chartModel.padR}
-                  y2={chartModel.targetY}
-                  stroke="#34d399"
-                  strokeWidth="2"
-                  strokeDasharray="6 4"
-                />
-
-                {/* Red Line & Dots */}
-                {(shiftFilter === 'all' || shiftFilter === 'red') && (
-                  <>
-                    <path
-                      d={chartModel.redPath}
-                      fill="none"
-                      stroke="#f43f5e"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    {pocket.series.red.map((v, i) =>
-                      v !== null ? (
-                        <g key={`r-${i}`}>
-                          <circle
-                            cx={chartModel.xAt(i)}
-                            cy={chartModel.yAt(v)}
-                            r="4.5"
-                            fill="#f43f5e"
-                            stroke="#0f172a"
-                            strokeWidth="2"
-                          />
-                          <text
-                            x={chartModel.xAt(i)}
-                            y={chartModel.yAt(v) - 9}
-                            textAnchor="middle"
-                            className="fill-rose-200 text-[10px] font-mono font-bold"
-                          >
-                            {v.toFixed(pocket.series!.dec)}
-                          </text>
-                        </g>
-                      ) : null
+              {/* SVG Multi-Model Chart */}
+              <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex flex-wrap items-center gap-4">
+                    {MODEL_META.filter((m) => modelFilter === 'all' || modelFilter === m.key).map(
+                      (m) => (
+                        <span
+                          key={m.key}
+                          className={`flex items-center gap-1.5 font-semibold ${m.textClass}`}
+                        >
+                          <span className={`h-2.5 w-2.5 rounded-full ${m.dotClass}`} /> {m.label}
+                        </span>
+                      )
                     )}
-                  </>
-                )}
+                    <span className="flex items-center gap-1.5 font-semibold text-emerald-300">
+                      <span className="h-0.5 w-4 border-t-2 border-dashed border-emerald-400" /> Target (
+                      {pocket.series.target}
+                      {pocket.series.unit})
+                    </span>
+                  </div>
+                  <span className="font-mono text-[11px] text-slate-400">
+                    Breakdown per Model (Innova · Fortuner · Zenix)
+                  </span>
+                </div>
 
-                {/* White Line & Dots */}
-                {(shiftFilter === 'all' || shiftFilter === 'white') && (
-                  <>
-                    <path
-                      d={chartModel.whitePath}
-                      fill="none"
-                      stroke="#38bdf8"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    {pocket.series.white.map((v, i) =>
-                      v !== null ? (
-                        <g key={`w-${i}`}>
-                          <circle
-                            cx={chartModel.xAt(i)}
-                            cy={chartModel.yAt(v)}
-                            r="4.5"
-                            fill="#38bdf8"
-                            stroke="#0f172a"
-                            strokeWidth="2"
+                <svg
+                  viewBox={`0 0 ${chartModel.W} ${chartModel.H}`}
+                  className="w-full h-auto max-h-[280px] overflow-visible"
+                >
+                  {[0, 0.25, 0.5, 0.75, 1].map((t) => {
+                    const val = chartModel.yMin + t * (chartModel.yMax - chartModel.yMin);
+                    const y = chartModel.yAt(val);
+                    return (
+                      <g key={t}>
+                        <line
+                          x1={chartModel.padL}
+                          y1={y}
+                          x2={chartModel.W - chartModel.padR}
+                          y2={y}
+                          stroke="rgba(255,255,255,0.08)"
+                          strokeWidth="1"
+                        />
+                        <text
+                          x={chartModel.padL - 8}
+                          y={y + 4}
+                          textAnchor="end"
+                          className="fill-slate-400 text-[10px] font-mono"
+                        >
+                          {val.toFixed(pocket.series!.dec)}
+                        </text>
+                      </g>
+                    );
+                  })}
+
+                  <line
+                    x1={chartModel.padL}
+                    y1={chartModel.targetY}
+                    x2={chartModel.W - chartModel.padR}
+                    y2={chartModel.targetY}
+                    stroke="#34d399"
+                    strokeWidth="2"
+                    strokeDasharray="6 4"
+                  />
+
+                  {MODEL_META.filter((m) => modelFilter === 'all' || modelFilter === m.key).map(
+                    (m, mIdx) => {
+                      const arr = pocket.series!.models![m.key];
+                      const pathD = chartModel.modelPaths![m.key];
+                      const labelOffset = mIdx === 0 ? -9 : mIdx === 1 ? 15 : -17;
+                      return (
+                        <g key={m.key}>
+                          <path
+                            d={pathD}
+                            fill="none"
+                            stroke={m.color}
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
-                          <text
-                            x={chartModel.xAt(i)}
-                            y={chartModel.yAt(v) + 15}
-                            textAnchor="middle"
-                            className="fill-sky-200 text-[10px] font-mono font-bold"
-                          >
-                            {v.toFixed(pocket.series!.dec)}
-                          </text>
+                          {arr.map((v, i) =>
+                            v !== null ? (
+                              <g key={`${m.key}-${i}`}>
+                                <circle
+                                  cx={chartModel.xAt(i)}
+                                  cy={chartModel.yAt(v)}
+                                  r="4.5"
+                                  fill={m.color}
+                                  stroke="#0f172a"
+                                  strokeWidth="2"
+                                />
+                                {(modelFilter !== 'all' || i === 0 || i === 7) && (
+                                  <text
+                                    x={chartModel.xAt(i)}
+                                    y={chartModel.yAt(v) + labelOffset}
+                                    textAnchor="middle"
+                                    fill={m.color}
+                                    className="text-[10px] font-mono font-bold"
+                                  >
+                                    {v.toFixed(pocket.series!.dec)}
+                                  </text>
+                                )}
+                              </g>
+                            ) : null
+                          )}
                         </g>
-                      ) : null
-                    )}
-                  </>
-                )}
+                      );
+                    }
+                  )}
 
-                {/* X-Axis Month Labels */}
-                {MONTHS.map((m, i) => (
-                  <text
-                    key={m}
-                    x={chartModel.xAt(i)}
-                    y={chartModel.H - 8}
-                    textAnchor="middle"
-                    className="fill-slate-400 text-[11px] font-mono"
-                  >
-                    {m}
-                  </text>
-                ))}
-              </svg>
+                  {MONTHS.map((m, i) => (
+                    <text
+                      key={m}
+                      x={chartModel.xAt(i)}
+                      y={chartModel.H - 8}
+                      textAnchor="middle"
+                      className="fill-slate-400 text-[11px] font-mono"
+                    >
+                      {m}
+                    </text>
+                  ))}
+                </svg>
+              </div>
+
+              {/* Monthly Data Table by Model */}
+              <div className="overflow-x-auto rounded-2xl border border-white/10">
+                <table className="w-full text-center text-xs font-mono">
+                  <thead className="bg-slate-950/80 text-slate-300">
+                    <tr>
+                      <th className="px-3 py-2 text-left font-sans">Model / Bulan</th>
+                      {MONTHS.map((m) => (
+                        <th key={m} className="px-2 py-2">
+                          {m}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/10 bg-slate-900/50">
+                    {MODEL_META.filter((m) => modelFilter === 'all' || modelFilter === m.key).map(
+                      (m) => (
+                        <tr key={m.key}>
+                          <td className={`px-3 py-2 text-left font-sans font-bold ${m.textClass}`}>
+                            {m.label}
+                          </td>
+                          {pocket.series!.models![m.key].map((v, i) => {
+                            const ok = isTargetMet(v, pocket.series!.target, pocket.series!.lower);
+                            return (
+                              <td
+                                key={i}
+                                className={`px-2 py-2 ${
+                                  ok === null
+                                    ? 'text-slate-600'
+                                    : ok
+                                      ? 'text-emerald-300 font-bold'
+                                      : 'text-amber-300 font-bold'
+                                }`}
+                              >
+                                {v !== null ? v.toFixed(pocket.series!.dec) : '—'}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
+          )}
 
-            {/* Monthly Data Table */}
-            <div className="overflow-x-auto rounded-2xl border border-white/10">
-              <table className="w-full text-center text-xs font-mono">
-                <thead className="bg-slate-950/80 text-slate-300">
-                  <tr>
-                    <th className="px-3 py-2 text-left font-sans">Regu / Bulan</th>
-                    {MONTHS.map((m) => (
-                      <th key={m} className="px-2 py-2">
-                        {m}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10 bg-slate-900/50">
+        {/* 1B. SHIFT-BASED SUB KPI (RED / WHITE) */}
+        {(pocket.template === 'main' || pocket.template === 'sub') &&
+          !isModelSeries &&
+          pocket.series &&
+          chartModel && (
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 flex items-center justify-between">
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                      Target FY26
+                    </div>
+                    <div className="mt-1 text-2xl font-black text-white font-mono">
+                      {pocket.series.lower ? '≤ ' : '≥ '}
+                      {pocket.series.target.toFixed(pocket.series.dec)} {pocket.series.unit}
+                    </div>
+                  </div>
+                  <Target className="w-7 h-7 text-cyan-400 opacity-80" />
+                </div>
+
+                <div className="rounded-2xl border border-rose-500/25 bg-rose-500/[0.06] p-3.5 flex items-center justify-between">
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-rose-300">
+                      Aktual Terakhir · Regu Red
+                    </div>
+                    <div className="mt-1 text-2xl font-black text-white font-mono">
+                      {chartModel.latestRed !== null
+                        ? `${chartModel.latestRed.toFixed(pocket.series.dec)} ${pocket.series.unit}`
+                        : '-'}
+                    </div>
+                  </div>
+                  {isTargetMet(chartModel.latestRed, pocket.series.target, pocket.series.lower) ? (
+                    <TrendingUp className="w-7 h-7 text-emerald-400" />
+                  ) : (
+                    <TrendingDown className="w-7 h-7 text-amber-400" />
+                  )}
+                </div>
+
+                <div className="rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] p-3.5 flex items-center justify-between">
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-sky-300">
+                      Aktual Terakhir · Regu White
+                    </div>
+                    <div className="mt-1 text-2xl font-black text-white font-mono">
+                      {chartModel.latestWhite !== null
+                        ? `${chartModel.latestWhite.toFixed(pocket.series.dec)} ${pocket.series.unit}`
+                        : '-'}
+                    </div>
+                  </div>
+                  {isTargetMet(chartModel.latestWhite, pocket.series.target, pocket.series.lower) ? (
+                    <TrendingUp className="w-7 h-7 text-emerald-400" />
+                  ) : (
+                    <TrendingDown className="w-7 h-7 text-amber-400" />
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-4">
+                    {(shiftFilter === 'all' || shiftFilter === 'red') && (
+                      <span className="flex items-center gap-1.5 font-semibold text-rose-300">
+                        <span className="h-2.5 w-2.5 rounded-full bg-rose-500" /> Regu Red
+                      </span>
+                    )}
+                    {(shiftFilter === 'all' || shiftFilter === 'white') && (
+                      <span className="flex items-center gap-1.5 font-semibold text-sky-300">
+                        <span className="h-2.5 w-2.5 rounded-full bg-sky-400" /> Regu White
+                      </span>
+                    )}
+                    <span className="flex items-center gap-1.5 font-semibold text-emerald-300">
+                      <span className="h-0.5 w-4 border-t-2 border-dashed border-emerald-400" /> Target (
+                      {pocket.series.target})
+                    </span>
+                  </div>
+                  <span className="font-mono text-[11px] text-slate-400">
+                    Satuan: {pocket.series.unit} (
+                    {pocket.series.lower ? 'Makin Kecil Makin Baik' : 'Makin Besar Makin Baik'})
+                  </span>
+                </div>
+
+                <svg
+                  viewBox={`0 0 ${chartModel.W} ${chartModel.H}`}
+                  className="w-full h-auto max-h-[280px] overflow-visible"
+                >
+                  {[0, 0.25, 0.5, 0.75, 1].map((t) => {
+                    const val = chartModel.yMin + t * (chartModel.yMax - chartModel.yMin);
+                    const y = chartModel.yAt(val);
+                    return (
+                      <g key={t}>
+                        <line
+                          x1={chartModel.padL}
+                          y1={y}
+                          x2={chartModel.W - chartModel.padR}
+                          y2={y}
+                          stroke="rgba(255,255,255,0.08)"
+                          strokeWidth="1"
+                        />
+                        <text
+                          x={chartModel.padL - 8}
+                          y={y + 4}
+                          textAnchor="end"
+                          className="fill-slate-400 text-[10px] font-mono"
+                        >
+                          {val.toFixed(pocket.series!.dec)}
+                        </text>
+                      </g>
+                    );
+                  })}
+
+                  <line
+                    x1={chartModel.padL}
+                    y1={chartModel.targetY}
+                    x2={chartModel.W - chartModel.padR}
+                    y2={chartModel.targetY}
+                    stroke="#34d399"
+                    strokeWidth="2"
+                    strokeDasharray="6 4"
+                  />
+
                   {(shiftFilter === 'all' || shiftFilter === 'red') && (
-                    <tr>
-                      <td className="px-3 py-2 text-left font-sans font-bold text-rose-300">Red</td>
-                      {pocket.series.red.map((v, i) => {
-                        const ok = isTargetMet(v, pocket.series!.target, pocket.series!.lower);
-                        return (
-                          <td
-                            key={i}
-                            className={`px-2 py-2 ${
-                              ok === null
-                                ? 'text-slate-600'
-                                : ok
-                                  ? 'text-emerald-300 font-bold'
-                                  : 'text-amber-300 font-bold'
-                            }`}
-                          >
-                            {v !== null ? v.toFixed(pocket.series!.dec) : '—'}
-                          </td>
-                        );
-                      })}
-                    </tr>
+                    <>
+                      <path
+                        d={chartModel.redPath}
+                        fill="none"
+                        stroke="#f43f5e"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      {(pocket.series.red ?? []).map((v, i) =>
+                        v !== null ? (
+                          <g key={`r-${i}`}>
+                            <circle
+                              cx={chartModel.xAt(i)}
+                              cy={chartModel.yAt(v)}
+                              r="4.5"
+                              fill="#f43f5e"
+                              stroke="#0f172a"
+                              strokeWidth="2"
+                            />
+                            <text
+                              x={chartModel.xAt(i)}
+                              y={chartModel.yAt(v) - 9}
+                              textAnchor="middle"
+                              className="fill-rose-200 text-[10px] font-mono font-bold"
+                            >
+                              {v.toFixed(pocket.series!.dec)}
+                            </text>
+                          </g>
+                        ) : null
+                      )}
+                    </>
                   )}
+
                   {(shiftFilter === 'all' || shiftFilter === 'white') && (
-                    <tr>
-                      <td className="px-3 py-2 text-left font-sans font-bold text-sky-300">White</td>
-                      {pocket.series.white.map((v, i) => {
-                        const ok = isTargetMet(v, pocket.series!.target, pocket.series!.lower);
-                        return (
-                          <td
-                            key={i}
-                            className={`px-2 py-2 ${
-                              ok === null
-                                ? 'text-slate-600'
-                                : ok
-                                  ? 'text-emerald-300 font-bold'
-                                  : 'text-amber-300 font-bold'
-                            }`}
-                          >
-                            {v !== null ? v.toFixed(pocket.series!.dec) : '—'}
-                          </td>
-                        );
-                      })}
-                    </tr>
+                    <>
+                      <path
+                        d={chartModel.whitePath}
+                        fill="none"
+                        stroke="#38bdf8"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      {(pocket.series.white ?? []).map((v, i) =>
+                        v !== null ? (
+                          <g key={`w-${i}`}>
+                            <circle
+                              cx={chartModel.xAt(i)}
+                              cy={chartModel.yAt(v)}
+                              r="4.5"
+                              fill="#38bdf8"
+                              stroke="#0f172a"
+                              strokeWidth="2"
+                            />
+                            <text
+                              x={chartModel.xAt(i)}
+                              y={chartModel.yAt(v) + 15}
+                              textAnchor="middle"
+                              className="fill-sky-200 text-[10px] font-mono font-bold"
+                            >
+                              {v.toFixed(pocket.series!.dec)}
+                            </text>
+                          </g>
+                        ) : null
+                      )}
+                    </>
                   )}
-                </tbody>
-              </table>
+
+                  {MONTHS.map((m, i) => (
+                    <text
+                      key={m}
+                      x={chartModel.xAt(i)}
+                      y={chartModel.H - 8}
+                      textAnchor="middle"
+                      className="fill-slate-400 text-[11px] font-mono"
+                    >
+                      {m}
+                    </text>
+                  ))}
+                </svg>
+              </div>
+
+              <div className="overflow-x-auto rounded-2xl border border-white/10">
+                <table className="w-full text-center text-xs font-mono">
+                  <thead className="bg-slate-950/80 text-slate-300">
+                    <tr>
+                      <th className="px-3 py-2 text-left font-sans">Regu / Bulan</th>
+                      {MONTHS.map((m) => (
+                        <th key={m} className="px-2 py-2">
+                          {m}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/10 bg-slate-900/50">
+                    {(shiftFilter === 'all' || shiftFilter === 'red') && (
+                      <tr>
+                        <td className="px-3 py-2 text-left font-sans font-bold text-rose-300">Red</td>
+                        {(pocket.series.red ?? []).map((v, i) => {
+                          const ok = isTargetMet(v, pocket.series!.target, pocket.series!.lower);
+                          return (
+                            <td
+                              key={i}
+                              className={`px-2 py-2 ${
+                                ok === null
+                                  ? 'text-slate-600'
+                                  : ok
+                                    ? 'text-emerald-300 font-bold'
+                                    : 'text-amber-300 font-bold'
+                              }`}
+                            >
+                              {v !== null ? v.toFixed(pocket.series!.dec) : '—'}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    )}
+                    {(shiftFilter === 'all' || shiftFilter === 'white') && (
+                      <tr>
+                        <td className="px-3 py-2 text-left font-sans font-bold text-sky-300">
+                          White
+                        </td>
+                        {(pocket.series.white ?? []).map((v, i) => {
+                          const ok = isTargetMet(v, pocket.series!.target, pocket.series!.lower);
+                          return (
+                            <td
+                              key={i}
+                              className={`px-2 py-2 ${
+                                ok === null
+                                  ? 'text-slate-600'
+                                  : ok
+                                    ? 'text-emerald-300 font-bold'
+                                    : 'text-amber-300 font-bold'
+                              }`}
+                            >
+                              {v !== null ? v.toFixed(pocket.series!.dec) : '—'}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* 2. PROSES KPI (PARETO) */}
         {pocket.template === 'proses' && pocket.causes && (
@@ -505,58 +810,60 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
 
         {/* 3. KAIZEN / LIST PROBLEM */}
         {pocket.template === 'kaizen' && pocket.items && (
-          <div className="overflow-x-auto rounded-2xl border border-white/10">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950/80 text-slate-300 uppercase tracking-wider text-[11px]">
-                <tr>
-                  <th className="px-3 py-3">No</th>
-                  <th className="px-3 py-3">Problem / Temuan</th>
-                  <th className="px-3 py-3">Countermeasure / Kaizen</th>
-                  <th className="px-3 py-3">Before → After</th>
-                  <th className="px-3 py-3">PIC</th>
-                  <th className="px-3 py-3">Due</th>
-                  <th className="px-3 py-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/10 bg-slate-900/40">
-                {filteredKaizenItems.map((item) => (
-                  <tr key={item.no} className="hover:bg-white/[0.03] transition">
-                    <td className="px-3 py-3 font-mono font-bold text-slate-400">{item.no}</td>
-                    <td className="px-3 py-3 font-semibold text-white">{item.problem}</td>
-                    <td className="px-3 py-3 text-slate-300">{item.countermeasure}</td>
-                    <td className="px-3 py-3 font-mono text-[11px]">
-                      <span className="text-rose-300">{item.beforeVal || '-'}</span>
-                      <span className="mx-1 text-slate-500">→</span>
-                      <span className="text-emerald-300 font-bold">{item.afterVal || '-'}</span>
-                    </td>
-                    <td className="px-3 py-3 text-slate-300 whitespace-nowrap">{item.pic}</td>
-                    <td className="px-3 py-3 font-mono text-slate-400 whitespace-nowrap">
-                      {item.due}
-                    </td>
-                    <td className="px-3 py-3 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold border ${
-                          item.status === 'Selesai'
-                            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                            : item.status === 'Proses'
-                              ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-                              : 'bg-rose-500/15 text-rose-300 border-rose-500/30'
-                        }`}
-                      >
-                        {item.status === 'Selesai' ? (
-                          <CheckCircle2 className="w-3 h-3" />
-                        ) : item.status === 'Proses' ? (
-                          <Clock className="w-3 h-3" />
-                        ) : (
-                          <AlertCircle className="w-3 h-3" />
-                        )}
-                        {item.status}
-                      </span>
-                    </td>
+          <div className="space-y-4">
+            <div className="overflow-x-auto rounded-2xl border border-white/10">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-950/80 text-slate-300 uppercase tracking-wider text-[11px]">
+                  <tr>
+                    <th className="px-3 py-3">No</th>
+                    <th className="px-3 py-3">Problem / Temuan</th>
+                    <th className="px-3 py-3">Countermeasure / Kaizen</th>
+                    <th className="px-3 py-3">Before → After</th>
+                    <th className="px-3 py-3">PIC</th>
+                    <th className="px-3 py-3">Due</th>
+                    <th className="px-3 py-3">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-white/10 bg-slate-900/40">
+                  {filteredKaizenItems.map((item) => (
+                    <tr key={item.no} className="hover:bg-white/[0.03] transition">
+                      <td className="px-3 py-3 font-mono font-bold text-slate-400">{item.no}</td>
+                      <td className="px-3 py-3 font-semibold text-white">{item.problem}</td>
+                      <td className="px-3 py-3 text-slate-300">{item.countermeasure}</td>
+                      <td className="px-3 py-3 font-mono text-[11px]">
+                        <span className="text-rose-300">{item.beforeVal || '-'}</span>
+                        <span className="mx-1 text-slate-500">→</span>
+                        <span className="text-emerald-300 font-bold">{item.afterVal || '-'}</span>
+                      </td>
+                      <td className="px-3 py-3 text-slate-300 whitespace-nowrap">{item.pic}</td>
+                      <td className="px-3 py-3 font-mono text-slate-400 whitespace-nowrap">
+                        {item.due}
+                      </td>
+                      <td className="px-3 py-3 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold border ${
+                            item.status === 'Selesai'
+                              ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                              : item.status === 'Proses'
+                                ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                                : 'bg-rose-500/15 text-rose-300 border-rose-500/30'
+                          }`}
+                        >
+                          {item.status === 'Selesai' ? (
+                            <CheckCircle2 className="w-3 h-3" />
+                          ) : item.status === 'Proses' ? (
+                            <Clock className="w-3 h-3" />
+                          ) : (
+                            <AlertCircle className="w-3 h-3" />
+                          )}
+                          {item.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
@@ -572,7 +879,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
               </div>
               <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-cyan-300">
-                  QAE Direction & Target
+                  QAE Direction &amp; Target
                 </div>
                 <p className="mt-1 text-sm font-semibold text-white">{pocket.hoshinMain.dir}</p>
               </div>

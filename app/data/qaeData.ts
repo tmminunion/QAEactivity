@@ -1,5 +1,6 @@
 // Data Dummy Terstruktur untuk QAEactivity (Quality Assurance Engineering KPI Board)
 // Struktur mengikuti GL Management Board UBnetwork: 7 Kolom Pilar x 4 Baris Kantong (Main, Sub, Proses, Kaizen)
+// Main KPI menggunakan breakdown per Model (Innova, Fortuner, Zenix) untuk OK Ratio.
 
 export const MONTHS = [
   'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan', 'Feb', 'Mar',
@@ -24,15 +25,28 @@ export const ROWS = [
 
 export type ColumnSlug = (typeof COLUMNS)[number]['slug'];
 export type RowKey = (typeof ROWS)[number]['key'];
-export type TemplateType = 'main' | 'sub' | 'proses' | 'kaizen' | 'hoshin-main' | 'hoshin-plan' | 'hoshin-tree' | 'hoshin-strategy';
+export type TemplateType =
+  | 'main'
+  | 'sub'
+  | 'proses'
+  | 'kaizen'
+  | 'hoshin-main'
+  | 'hoshin-plan'
+  | 'hoshin-tree'
+  | 'hoshin-strategy';
 
 export interface SeriesData {
   unit: string;
   target: number;
   dec: number;
   lower: boolean;
-  red: (number | null)[];
-  white: (number | null)[];
+  red?: (number | null)[];
+  white?: (number | null)[];
+  models?: {
+    innova: (number | null)[];
+    fortuner: (number | null)[];
+    zenix: (number | null)[];
+  };
 }
 
 export interface ParetoCause {
@@ -70,7 +84,7 @@ export interface ActionPlanRow {
   target: string;
   current: string;
   activity: string;
-  schedule: string[]; // e.g. ["Apr-Mei", "Sep-Okt"]
+  schedule: string[];
   pic: string;
   status: 'On Track' | 'At Risk' | 'Done';
 }
@@ -178,7 +192,7 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
         page: '1 / 4',
         coy: 'Mewujudkan Zero Customer Claim melalui penguatan Built-in Quality (BIQ), digitalisasi inspeksi, dan standardisasi proses QAE.',
         dir: 'QAE FY26: Turunkan Outflow Defect 50%, 100% Kalibrasi Tepat Waktu, & 100% Audit Compliance.',
-        kpiTarget: '0 Outflow Claim & FPY ≥ 99.8%',
+        kpiTarget: '0 Outflow Claim & OK Ratio ≥ 99.5%',
         reflection: [
           {
             title: '1. QUALITY & AUDIT',
@@ -213,7 +227,7 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
         ],
         kpi: [
           { label: '0 Customer Claim', hl: true, lines: ['Target: 0 Kasus', 'Aktual YTD: 0 Kasus'] },
-          { label: 'FPY ≥ 99.80%', hl: false, lines: ['Red: 99.84%', 'White: 99.79%'] },
+          { label: 'OK Ratio ≥ 99.50%', hl: false, lines: ['Innova: 99.78% · Fortuner: 99.64%', 'Zenix: 99.82%'] },
           { label: '100% Kalibrasi', hl: true, lines: ['148 / 148 Alat On-Time'] },
         ],
       },
@@ -227,9 +241,9 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
         {
           no: '1',
           kra: 'QUALITY',
-          kpiName: 'Outflow Defect ke Final Assy',
-          target: '0 Kasus / Bln',
-          current: '0.02 DPU',
+          kpiName: 'OK Ratio Model Innova, Fortuner, Zenix',
+          target: '≥ 99.50%',
+          current: '99.75%',
           activity: 'Kamishibai Poka-Yoke & Gate Inspection 100%',
           schedule: ['Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep'],
           pic: 'R. Pratama',
@@ -289,31 +303,31 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
       kpiTree: [
         {
           pillar: 'Quality',
-          main: '0 Outflow Claim\nFPY ≥ 99.8%',
+          main: 'OK Ratio ≥ 99.5%\n(Innova, Fortuner, Zenix)',
           sub: ['In-Process DPU ≤ 0.25', 'First Pass Yield ≥ 99.8%', 'Rework Rate ≤ 0.3%'],
           process: ['Kamishibai Gate Check', 'Poka-Yoke Sensor Verification', 'SPC Control Chart (Xbar-R)'],
         },
         {
           pillar: 'Audit',
-          main: 'Audit Score ≥ 96%',
+          main: 'OK Ratio Audit ≥ 96%',
           sub: ['IATF 16949 Compliance', 'Close Temuan ≤ 7 Hari'],
           process: ['Daily Layered Process Audit (LPA)', 'SW Compliance Check', '4M / Henkaten Verification'],
         },
         {
           pillar: 'Engineering',
-          main: '100% Calibration\nGage R&R < 10%',
+          main: 'OK Ratio Kalibrasi 100%\nGage R&R < 10%',
           sub: ['On-Time Calibration', 'CPK Critical Dim ≥ 1.67'],
           process: ['CMM & Fixture Check', 'MSA Study Schedule', 'Limit Sample Renewal'],
         },
         {
           pillar: 'Cost',
-          main: 'COPQ ≤ Rp 8 Jt/bln',
+          main: 'OK Ratio Budget ≥ 98%\nCOPQ ≤ Rp 8 Jt/bln',
           sub: ['Scrap Cost Reduction', 'Zero Sortir Eksternal'],
           process: ['Pareto Scrap per Part', 'Analisa Root Cause 5-Why'],
         },
         {
           pillar: 'HR-Dev',
-          main: '100% Certified QAE',
+          main: 'OK Ratio Skill ≥ 95%',
           sub: ['Tanoko Skill Level ≥ 3', '2 Idea Kaizen / MP / Bln'],
           process: ['QCC 8-Langkah Circle', 'Limit Sample Dojo Calibration'],
         },
@@ -329,8 +343,8 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
           letter: 'Q',
           title: 'Quality Assurance',
           lines: [
+            'Jaga OK Ratio model Innova, Fortuner, dan Zenix di atas 99.50%.',
             'Zero Defect Outflow ke Final Assembly melalui 100% Auto-Gate Poka-Yoke.',
-            'Turunkan In-Process DPU di bawah 0.20 pada model prioritas.',
           ],
         },
         {
@@ -372,22 +386,25 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
   quality: {
     main: {
       template: 'main',
-      title: 'FIRST PASS YIELD (FPY)',
-      subtitle: 'Main KPI Quality Assurance — Target ≥ 99.80%',
+      title: 'OK RATIO BY MODEL (Q-GATE)',
+      subtitle: 'Main KPI Quality Assurance — Innova · Fortuner · Zenix (Target ≥ 99.50%)',
       series: {
         unit: '%',
-        target: 99.8,
+        target: 99.5,
         dec: 2,
         lower: false,
-        red: [99.72, 99.76, 99.81, 99.84, 99.79, 99.86, 99.88, 99.85, null, null, null, null],
-        white: [99.68, 99.74, 99.78, 99.8, 99.82, 99.83, 99.81, 99.84, null, null, null, null],
+        models: {
+          innova: [99.42, 99.51, 99.58, 99.64, 99.69, 99.72, 99.75, 99.78, null, null, null, null],
+          fortuner: [99.28, 99.36, 99.45, 99.52, 99.55, 99.58, 99.61, 99.64, null, null, null, null],
+          zenix: [99.54, 99.6, 99.66, 99.71, 99.74, 99.77, 99.8, 99.82, null, null, null, null],
+        },
       },
-      comment: 'Tren FPY meningkat konsisten di atas target 99.80% sejak Juli setelah pemasangan Poka-Yoke pos #3.',
+      comment: 'OK Ratio Zenix tertinggi (99.82%), Innova & Fortuner konsisten di atas target 99.50% sejak Juli.',
     },
     sub: {
       template: 'sub',
       title: 'IN-PROCESS DEFECT (DPU)',
-      subtitle: 'Sub KPI Quality — Target ≤ 0.25 DPU',
+      subtitle: 'Sub KPI Quality per Regu — Target ≤ 0.25 DPU',
       series: {
         unit: 'DPU',
         target: 0.25,
@@ -419,7 +436,7 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
       items: [
         {
           no: '1',
-          problem: 'Spatter berlebih pada flange bracket LH',
+          problem: 'Spatter berlebih pada flange bracket LH (Fortuner)',
           countermeasure: 'Optimasi sudut torch & auto-spray nozzle',
           pic: 'R. Pratama',
           due: '15 Nov',
@@ -429,7 +446,7 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
         },
         {
           no: '2',
-          problem: 'Potensi nut missing lolos ke proses berikutnya',
+          problem: 'Potensi nut missing lolos ke proses berikutnya (Innova)',
           countermeasure: 'Pasang sensor proximity + interlock conveyor',
           pic: 'D. Kurniawan',
           due: '28 Nov',
@@ -439,7 +456,7 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
         },
         {
           no: '3',
-          problem: 'Gap bracket fender melebihi toleransi 0.8mm',
+          problem: 'Gap bracket fender melebihi toleransi 0.8mm (Zenix)',
           countermeasure: 'Re-shimming pin locator jig #2 & cek rutin',
           pic: 'A. Hidayat',
           due: '10 Des',
@@ -465,22 +482,25 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
   audit: {
     main: {
       template: 'main',
-      title: 'SKOR AUDIT INTERNAL QAE',
-      subtitle: 'Main KPI Audit & Compliance — Target ≥ 96%',
+      title: 'OK RATIO AUDIT COMPLIANCE',
+      subtitle: 'Main KPI Audit per Model — Innova · Fortuner · Zenix (Target ≥ 96.0%)',
       series: {
         unit: '%',
-        target: 96,
+        target: 96.0,
         dec: 1,
         lower: false,
-        red: [94.5, 95.2, 96.0, 96.8, 97.1, 97.5, 97.2, 98.0, null, null, null, null],
-        white: [93.8, 94.9, 95.5, 96.2, 96.5, 96.9, 97.4, 97.6, null, null, null, null],
+        models: {
+          innova: [94.8, 95.5, 96.2, 96.8, 97.1, 97.4, 97.6, 98.1, null, null, null, null],
+          fortuner: [94.1, 94.9, 95.7, 96.1, 96.5, 96.9, 97.2, 97.5, null, null, null, null],
+          zenix: [95.2, 96.0, 96.6, 97.2, 97.5, 97.9, 98.1, 98.4, null, null, null, null],
+        },
       },
-      comment: 'Kepatuhan Layered Process Audit (LPA) meningkat stabil di atas 96%.',
+      comment: 'Kepatuhan Layered Process Audit (LPA) pada seluruh line model melampaui target 96%.',
     },
     sub: {
       template: 'sub',
       title: 'ON-TIME CLOSE TEMUAN AUDIT',
-      subtitle: 'Sub KPI Audit — Target 100% Close ≤ 7 Hari',
+      subtitle: 'Sub KPI Audit per Regu — Target 100% Close ≤ 7 Hari',
       series: {
         unit: '%',
         target: 100,
@@ -548,22 +568,25 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
   engineering: {
     main: {
       template: 'main',
-      title: 'ON-TIME KALIBRASI ALAT UKUR',
-      subtitle: 'Main KPI QAE Engineering — Target 100%',
+      title: 'OK RATIO KALIBRASI & JIG',
+      subtitle: 'Main KPI Engineering per Model — Innova · Fortuner · Zenix (Target ≥ 99.0%)',
       series: {
         unit: '%',
-        target: 100,
+        target: 99.0,
         dec: 1,
         lower: false,
-        red: [98.0, 99.0, 100, 100, 99.2, 100, 100, 100, null, null, null, null],
-        white: [97.5, 98.5, 99.5, 100, 100, 100, 99.5, 100, null, null, null, null],
+        models: {
+          innova: [98.2, 98.8, 99.2, 99.5, 99.6, 100, 100, 100, null, null, null, null],
+          fortuner: [97.8, 98.4, 99.0, 99.2, 99.4, 99.6, 99.8, 100, null, null, null, null],
+          zenix: [98.6, 99.1, 99.5, 99.8, 100, 100, 100, 100, null, null, null, null],
+        },
       },
-      comment: '148 dari 148 instrumen ukur & checking fixture aktif terkalibrasi tepat waktu.',
+      comment: '148 dari 148 instrumen ukur & checking fixture Innova, Fortuner, Zenix terkalibrasi tepat waktu.',
     },
     sub: {
       template: 'sub',
       title: 'CAPABILITY INDEX (Cpk) CTQ',
-      subtitle: 'Sub KPI Engineering — Target Cpk ≥ 1.67',
+      subtitle: 'Sub KPI Engineering per Regu — Target Cpk ≥ 1.67',
       series: {
         unit: 'Cpk',
         target: 1.67,
@@ -630,22 +653,25 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
   safety: {
     main: {
       template: 'main',
-      title: 'SAFETY PERFORMANCE QAE',
-      subtitle: 'Main KPI Safety — Target 0 Accident & Incident',
+      title: 'OK RATIO SAFETY CHECK',
+      subtitle: 'Main KPI Safety per Model — Innova · Fortuner · Zenix (Target 100.0%)',
       series: {
-        unit: 'kasus',
-        target: 0,
-        dec: 0,
-        lower: true,
-        red: [0, 0, 0, 0, 0, 0, 0, 0, null, null, null, null],
-        white: [0, 0, 0, 1, 0, 0, 0, 0, null, null, null, null],
+        unit: '%',
+        target: 100.0,
+        dec: 1,
+        lower: false,
+        models: {
+          innova: [98.5, 99.0, 99.5, 100, 100, 100, 100, 100, null, null, null, null],
+          fortuner: [98.0, 98.8, 99.2, 99.5, 100, 100, 100, 100, null, null, null, null],
+          zenix: [99.0, 99.5, 100, 100, 100, 100, 100, 100, null, null, null, null],
+        },
       },
-      comment: '1.428 hari LTI-Free. 1 kasus near-miss ringan di Juli sudah ditutup permanen.',
+      comment: '1.428 hari LTI-Free. Seluruh line model mencapai 100% kepatuhan APD & Safety Device.',
     },
     sub: {
       template: 'sub',
       title: 'KYT & SAFETY PATROL',
-      subtitle: 'Sub KPI Safety — Target 100% Pelaksanaan',
+      subtitle: 'Sub KPI Safety per Regu — Target 100% Pelaksanaan',
       series: {
         unit: '%',
         target: 100,
@@ -712,22 +738,25 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
   cost: {
     main: {
       template: 'main',
-      title: 'COST OF POOR QUALITY (COPQ)',
-      subtitle: 'Main KPI Cost — Target ≤ Rp 8.0 Juta / Bulan',
+      title: 'OK RATIO EFISIENSI BIAYA MUTU',
+      subtitle: 'Main KPI Cost per Model — Innova · Fortuner · Zenix (Target ≥ 98.0%)',
       series: {
-        unit: 'jt',
-        target: 8.0,
+        unit: '%',
+        target: 98.0,
         dec: 1,
-        lower: true,
-        red: [10.4, 9.6, 8.9, 8.2, 7.8, 7.5, 7.2, 6.9, null, null, null, null],
-        white: [10.8, 9.9, 9.1, 8.5, 8.1, 7.7, 7.4, 7.1, null, null, null, null],
+        lower: false,
+        models: {
+          innova: [96.8, 97.3, 97.9, 98.2, 98.5, 98.7, 98.9, 99.1, null, null, null, null],
+          fortuner: [96.4, 97.0, 97.5, 97.9, 98.2, 98.4, 98.6, 98.8, null, null, null, null],
+          zenix: [97.2, 97.8, 98.3, 98.6, 98.9, 99.1, 99.2, 99.4, null, null, null, null],
+        },
       },
-      comment: 'COPQ turun 33% dibanding awal tahun fiskal berkat pengurangan scrap & rework.',
+      comment: 'Efisiensi biaya mutu (non-scrap & non-rework ratio) seluruh model melampaui 98%.',
     },
     sub: {
       template: 'sub',
       title: 'REWORK & SORTIR MAN-HOUR',
-      subtitle: 'Sub KPI Cost — Target ≤ 20 Jam / Bulan',
+      subtitle: 'Sub KPI Cost per Regu — Target ≤ 20 Jam / Bulan',
       series: {
         unit: 'jam',
         target: 20,
@@ -794,22 +823,25 @@ export const POCKETS: Record<ColumnSlug, Record<RowKey, PocketData>> = {
   'hr-dev': {
     main: {
       template: 'main',
-      title: 'SKILL MATRIX & SERTIFIKASI',
-      subtitle: 'Main KPI HR-Dev — Target ≥ 95% Certified',
+      title: 'OK RATIO SERTIFIKASI INSPECTOR',
+      subtitle: 'Main KPI HR-Dev per Model — Innova · Fortuner · Zenix (Target ≥ 95%)',
       series: {
         unit: '%',
         target: 95,
         dec: 0,
         lower: false,
-        red: [86, 88, 91, 93, 95, 96, 97, 98, null, null, null, null],
-        white: [84, 87, 89, 92, 94, 95, 96, 97, null, null, null, null],
+        models: {
+          innova: [88, 90, 92, 94, 96, 97, 98, 99, null, null, null, null],
+          fortuner: [85, 88, 90, 92, 94, 95, 96, 97, null, null, null, null],
+          zenix: [89, 91, 93, 95, 97, 98, 99, 100, null, null, null, null],
+        },
       },
-      comment: 'Hampir seluruh inspector sudah mencapai Tanoko Level 3–4.',
+      comment: 'Inspector tersertifikasi pada model Innova, Fortuner, dan Zenix telah melewati target 95%.',
     },
     sub: {
       template: 'sub',
       title: 'KEHADIRAN & IDEA KAIZEN',
-      subtitle: 'Sub KPI HR-Dev — Target Kehadiran ≥ 98%',
+      subtitle: 'Sub KPI HR-Dev per Regu — Target Kehadiran ≥ 98%',
       series: {
         unit: '%',
         target: 98,
