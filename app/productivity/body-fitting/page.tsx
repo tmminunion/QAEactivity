@@ -164,10 +164,10 @@ export default function ControlBodyFittingPage() {
   }, [rows]);
 
   return (
-    <main className="min-h-dvh bg-[#1a0617] text-slate-100 px-3 py-4 sm:px-6 print:bg-white print:text-slate-900 print:p-0">
+    <main className="min-h-dvh bg-[#1c1c1c] text-slate-100 px-3 py-4 sm:px-6 print:bg-white print:text-slate-900 print:p-0">
       <div className="max-w-7xl mx-auto space-y-4">
         {/* Top Action Bar (Hidden on Print) */}
-        <header className="no-print flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-pink-300/20 bg-[#280b23]/75 px-4 py-3 backdrop-blur-xl">
+        <header className="no-print flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/[0.08] bg-[#252525]/75 px-4 py-3 backdrop-blur-xl">
           <div className="flex items-center gap-2">
             <Link
               href="/productivity"
@@ -191,7 +191,7 @@ export default function ControlBodyFittingPage() {
                 onClick={() => setDoorArea(d)}
                 className={`rounded-xl px-2.5 py-1.5 text-[11px] font-bold transition cursor-pointer ${
                   doorArea === d
-                    ? 'bg-pink-500 text-white'
+                    ? 'bg-[#0078d4] text-white'
                     : 'bg-white/5 text-slate-300 hover:bg-white/10'
                 }`}
               >
@@ -203,14 +203,14 @@ export default function ControlBodyFittingPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setRows(INITIAL_ROWS)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-pink-300/25 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/10 transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.12] bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-white/10 transition cursor-pointer"
               title="Reset Evaluasi"
             >
               <RotateCcw className="h-3.5 w-3.5" /> Reset
             </button>
             <button
               onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-pink-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-pink-400 transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#0078d4] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#1888e0] transition cursor-pointer"
             >
               <Printer className="h-3.5 w-3.5" /> Cetak A3/A4
             </button>
@@ -219,28 +219,28 @@ export default function ControlBodyFittingPage() {
 
         {/* Live Evaluation Summary Bar (Hidden on Print) */}
         <div className="no-print grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="rounded-2xl border border-pink-300/20 bg-[#280b23]/70 p-3 flex items-center justify-between">
+          <div className="rounded-lg border border-white/[0.08] bg-[#252525]/70 p-3 flex items-center justify-between">
             <div>
               <div className="text-[11px] text-slate-400 font-semibold">Total Point Kontrol</div>
               <div className="text-xl font-black text-white font-mono">{stats.total}</div>
             </div>
-            <Wrench className="w-6 h-6 text-pink-400" />
+            <Wrench className="w-6 h-6 text-[#4cc2ff]" />
           </div>
-          <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-3 flex items-center justify-between">
+          <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 p-3 flex items-center justify-between">
             <div>
               <div className="text-[11px] text-emerald-300 font-semibold">Status OK</div>
               <div className="text-xl font-black text-white font-mono">{stats.ok}</div>
             </div>
             <CheckCircle2 className="w-6 h-6 text-emerald-400" />
           </div>
-          <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-3 flex items-center justify-between">
+          <div className="rounded-lg border border-amber-500/25 bg-amber-500/10 p-3 flex items-center justify-between">
             <div>
               <div className="text-[11px] text-amber-300 font-semibold">Perlu Perhatian (Δ)</div>
               <div className="text-xl font-black text-white font-mono">{stats.warn}</div>
             </div>
             <AlertTriangle className="w-6 h-6 text-amber-400" />
           </div>
-          <div className="rounded-2xl border border-rose-500/25 bg-rose-500/10 p-3 flex items-center justify-between">
+          <div className="rounded-lg border border-rose-500/25 bg-rose-500/10 p-3 flex items-center justify-between">
             <div>
               <div className="text-[11px] text-rose-300 font-semibold">Status NG</div>
               <div className="text-xl font-black text-white font-mono">{stats.ng}</div>
@@ -252,7 +252,7 @@ export default function ControlBodyFittingPage() {
         {/* ======================================================= */}
         {/* DIGITAL PAPER SHEET: CONTROL DOLLY BODY FITTING         */}
         {/* ======================================================= */}
-        <section className="rounded-2xl border border-slate-700 bg-white text-slate-900 shadow-2xl overflow-hidden print:border-slate-900 print:shadow-none">
+        <section className="rounded-lg border border-slate-700 bg-white text-slate-900 shadow-2xl overflow-hidden print:border-slate-900 print:shadow-none">
           {/* Official Sheet Header */}
           <div className="grid grid-cols-1 md:grid-cols-12 border-b-2 border-slate-900">
             {/* Left Company & Section */}
@@ -330,7 +330,7 @@ export default function ControlBodyFittingPage() {
                     className="rounded-lg border border-slate-300 bg-slate-50 p-2 flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="w-6 h-6 rounded-full bg-[#280b23] text-white text-xs font-black flex items-center justify-center">
+                      <span className="w-6 h-6 rounded-full bg-[#252525] text-white text-xs font-black flex items-center justify-center">
                         {pt.no}
                       </span>
                       <span className="text-[10px] font-mono font-bold text-sky-700">
@@ -348,7 +348,7 @@ export default function ControlBodyFittingPage() {
             {/* Table 5.1.1 Model Matrix */}
             <div className="lg:col-span-4 rounded-xl border border-slate-300 bg-white p-3 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[11px] font-black bg-[#280b23] text-white px-2 py-0.5 rounded">
+                <span className="text-[11px] font-black bg-[#252525] text-white px-2 py-0.5 rounded">
                   5.1.1
                 </span>
                 <span className="text-[11px] font-bold text-slate-600">

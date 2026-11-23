@@ -17,10 +17,10 @@ export default function DisplayDetailPage() {
     : 'main';
 
   return (
-    <main className="min-h-dvh bg-[#1a0617] text-slate-100 px-4 py-4 sm:px-6">
+    <main className="min-h-dvh bg-[#1c1c1c] text-slate-100 px-4 py-4 sm:px-6">
       <div className="max-w-7xl mx-auto space-y-4">
         {/* Top Navigation Bar */}
-        <header className="no-print flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-pink-300/20 bg-[#280b23]/70 px-4 py-3 backdrop-blur-xl">
+        <header className="no-print flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/[0.08] bg-[#252525]/70 px-4 py-3 backdrop-blur-xl">
           <div className="flex items-center gap-3">
             <Link
               href="/display"
@@ -44,7 +44,7 @@ export default function DisplayDetailPage() {
                 href={`/display/${validCol}/${r.key}`}
                 className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${
                   validRow === r.key
-                    ? 'bg-pink-500 text-white shadow-md shadow-pink-500/20'
+                    ? 'bg-[#0078d4] text-white shadow-md shadow-[#0078d4]/20'
                     : 'bg-white/5 text-slate-300 hover:bg-white/10'
                 }`}
               >
@@ -56,7 +56,7 @@ export default function DisplayDetailPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-pink-300/25 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10 transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.12] bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10 transition cursor-pointer"
             >
               <Printer className="h-3.5 w-3.5" /> Cetak
             </button>
@@ -77,8 +77,8 @@ export default function DisplayDetailPage() {
               href={`/display/${c.slug}/${validRow}`}
               className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition ${
                 validCol === c.slug
-                  ? 'border-pink-400/60 bg-pink-500/15 text-pink-300'
-                  : 'border-pink-300/20 bg-white/[0.03] text-slate-400 hover:border-white/25 hover:text-white'
+                  ? 'border-[#4cc2ff]/60 bg-[#0078d4]/15 text-[#60cdff]'
+                  : 'border-white/[0.08] bg-white/[0.03] text-slate-400 hover:border-white/25 hover:text-white'
               }`}
             >
               {c.short}
