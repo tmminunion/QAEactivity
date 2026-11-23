@@ -104,7 +104,7 @@ export default function DisplayBoardPage() {
                   <div
                     className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${t.grad} text-lg font-black text-white shadow-lg shadow-black/40`}
                   >
-                    {c.chip || c.short[0]}
+                    {c.chip}
                   </div>
                   <div className="min-w-0">
                     <h2 className={`truncate text-xl font-extrabold tracking-wide ${t.text}`}>
