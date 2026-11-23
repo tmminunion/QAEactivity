@@ -38,7 +38,7 @@ export default function DisplayBoardPage() {
   }, [router]);
 
   return (
-    <main className="relative flex min-h-dvh flex-col overflow-x-hidden bg-[#070b14] px-4 py-4 text-slate-100 sm:px-6 lg:min-h-dvh">
+    <main className="relative flex min-h-dvh flex-col overflow-x-hidden bg-[#1a0617] px-4 py-4 text-slate-100 sm:px-6 lg:min-h-dvh">
       {/* Ambient Background */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -left-40 -top-40 h-[480px] w-[480px] rounded-full bg-sky-600/20 blur-[120px]" />
@@ -77,7 +77,7 @@ export default function DisplayBoardPage() {
             >
               <Monitor className="h-4 w-4" /> Monitor Slideshow
             </Link>
-            <div className="hidden items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-[11px] text-slate-400 backdrop-blur md:flex">
+            <div className="hidden items-center gap-2 rounded-xl border border-pink-300/20 bg-white/[0.04] px-3 py-2 text-[11px] text-slate-400 backdrop-blur md:flex">
               <span className="font-semibold text-slate-300">Pintasan</span>
               <kbd className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-slate-200">
                 1–{COLUMNS.length}
@@ -93,7 +93,7 @@ export default function DisplayBoardPage() {
             return (
               <section
                 key={c.key}
-                className={`group/card relative flex min-h-0 flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-4 shadow-2xl backdrop-blur-xl transition duration-300 ${t.ring}`}
+                className={`group/card relative flex min-h-0 flex-col overflow-hidden rounded-3xl border border-pink-300/20 bg-white/[0.04] p-4 shadow-2xl backdrop-blur-xl transition duration-300 ${t.ring}`}
               >
                 <div
                   className={`pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-3xl opacity-60 transition-opacity duration-300 group-hover/card:opacity-100 ${t.glow}`}
@@ -125,7 +125,7 @@ export default function DisplayBoardPage() {
                       <Link
                         key={r.key}
                         href={`/display/${c.slug}/${r.key}`}
-                        className="group/btn relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 p-3 transition duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-slate-800/80 hover:shadow-xl"
+                        className="group/btn relative flex flex-col justify-between overflow-hidden rounded-2xl border border-pink-300/20 bg-[#280b23]/60 p-3 transition duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-[#361130]/80 hover:shadow-xl"
                       >
                         <div
                           className={`absolute inset-0 bg-gradient-to-br ${t.grad} opacity-0 transition-opacity duration-200 group-hover/btn:opacity-15`}

@@ -12,7 +12,7 @@ export default function ActivityDetailPage() {
     ACTIVITY_PROGRAMS.find((a) => a.slug === params.slug) ?? ACTIVITY_PROGRAMS[0];
 
   return (
-    <main className="min-h-dvh bg-[#070b14] text-slate-100 px-4 py-6 sm:px-6">
+    <main className="min-h-dvh bg-[#1a0617] text-slate-100 px-4 py-6 sm:px-6">
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -42,8 +42,8 @@ export default function ActivityDetailPage() {
                 href={`/activity/${a.slug}`}
                 className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition ${
                   a.slug === program.slug
-                    ? 'border-cyan-400/60 bg-cyan-500/15 text-cyan-300'
-                    : 'border-white/10 bg-white/[0.03] text-slate-400 hover:text-white'
+                    ? 'border-pink-400/60 bg-pink-500/15 text-pink-300'
+                    : 'border-pink-300/20 bg-white/[0.03] text-slate-400 hover:text-white'
                 }`}
               >
                 {a.code}
@@ -52,9 +52,9 @@ export default function ActivityDetailPage() {
           </div>
         </header>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-sm text-slate-300 flex flex-wrap items-center justify-between gap-3">
+        <div className="rounded-2xl border border-pink-300/20 bg-white/[0.04] p-4 text-sm text-slate-300 flex flex-wrap items-center justify-between gap-3">
           <span>{program.desc}</span>
-          <span className="rounded-full bg-cyan-500/15 border border-cyan-500/30 px-3 py-1 text-xs font-mono font-bold text-cyan-300">
+          <span className="rounded-full bg-pink-500/15 border border-pink-500/30 px-3 py-1 text-xs font-mono font-bold text-pink-300">
             {program.highlight}
           </span>
         </div>
@@ -63,11 +63,11 @@ export default function ActivityDetailPage() {
           {program.records.map((rec) => (
             <div
               key={rec.id}
-              className="rounded-3xl border border-white/10 bg-slate-900/70 p-5 shadow-xl flex flex-col justify-between space-y-4"
+              className="rounded-3xl border border-pink-300/20 bg-[#280b23]/70 p-5 shadow-xl flex flex-col justify-between space-y-4"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-cyan-400">{rec.id}</span>
+                  <span className="font-mono text-xs font-bold text-pink-400">{rec.id}</span>
                   <span
                     className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold border ${
                       rec.status === 'Selesai'
@@ -96,7 +96,7 @@ export default function ActivityDetailPage() {
                 </div>
               </div>
 
-              <div className="space-y-2 pt-3 border-t border-white/10">
+              <div className="space-y-2 pt-3 border-t border-pink-300/20">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-400">Progress</span>
                   <span className="font-mono font-bold text-white">{rec.progress}%</span>

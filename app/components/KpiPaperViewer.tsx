@@ -166,10 +166,10 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
   }, [pocket.items, kaizenFilter]);
 
   return (
-    <div className="w-full rounded-3xl border border-white/15 bg-slate-900/85 text-slate-100 shadow-2xl backdrop-blur-xl overflow-hidden">
+    <div className="w-full rounded-3xl border border-pink-300/25 bg-[#280b23]/85 text-slate-100 shadow-2xl backdrop-blur-xl overflow-hidden">
       {/* Top Paper Header Strip */}
       <div className={`h-1.5 w-full bg-gradient-to-r ${theme.grad}`} />
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-slate-950/60 px-5 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-pink-300/20 bg-[#1a0617]/60 px-5 py-4">
         <div className="flex items-center gap-3">
           <div
             className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br ${theme.grad} text-base font-black text-white shadow-lg`}
@@ -194,12 +194,12 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
 
         {/* Interactive Filter Controls */}
         {(pocket.template === 'main' || pocket.template === 'sub') && isModelSeries && (
-          <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/90 p-1 text-xs">
+          <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-pink-300/20 bg-[#280b23]/90 p-1 text-xs">
             <button
               onClick={() => setModelFilter('all')}
               className={`rounded-lg px-2.5 py-1 font-semibold transition cursor-pointer ${
                 modelFilter === 'all'
-                  ? 'bg-cyan-500 text-slate-950'
+                  ? 'bg-pink-500 text-white'
                   : 'text-slate-300 hover:bg-white/10'
               }`}
             >
@@ -211,7 +211,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                 onClick={() => setModelFilter(m.key)}
                 className={`rounded-lg px-2.5 py-1 font-semibold transition cursor-pointer ${
                   modelFilter === m.key
-                    ? 'bg-cyan-500 text-slate-950'
+                    ? 'bg-pink-500 text-white'
                     : 'text-slate-300 hover:bg-white/10'
                 }`}
               >
@@ -222,14 +222,14 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
         )}
 
         {(pocket.template === 'main' || pocket.template === 'sub') && !isModelSeries && (
-          <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/90 p-1 text-xs">
+          <div className="flex items-center gap-1.5 rounded-xl border border-pink-300/20 bg-[#280b23]/90 p-1 text-xs">
             {(['all', 'red', 'white'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setShiftFilter(mode)}
                 className={`rounded-lg px-2.5 py-1 font-semibold transition cursor-pointer ${
                   shiftFilter === mode
-                    ? 'bg-cyan-500 text-slate-950'
+                    ? 'bg-pink-500 text-white'
                     : 'text-slate-300 hover:bg-white/10'
                 }`}
               >
@@ -240,14 +240,14 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
         )}
 
         {pocket.template === 'kaizen' && (
-          <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/90 p-1 text-xs">
+          <div className="flex items-center gap-1.5 rounded-xl border border-pink-300/20 bg-[#280b23]/90 p-1 text-xs">
             {(['all', 'Selesai', 'Proses', 'Belum'] as const).map((st) => (
               <button
                 key={st}
                 onClick={() => setKaizenFilter(st)}
                 className={`rounded-lg px-2.5 py-1 font-semibold transition cursor-pointer ${
                   kaizenFilter === st
-                    ? 'bg-cyan-500 text-slate-950'
+                    ? 'bg-pink-500 text-white'
                     : 'text-slate-300 hover:bg-white/10'
                 }`}
               >
@@ -269,7 +269,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
             <div className="space-y-5">
               {/* 4 Summary Cards: Target + Innova + Fortuner + Zenix */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 flex items-center justify-between">
+                <div className="rounded-2xl border border-pink-300/20 bg-white/[0.03] p-3.5 flex items-center justify-between">
                   <div>
                     <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                       Target OK Ratio
@@ -279,7 +279,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                       {pocket.series.target.toFixed(pocket.series.dec)} {pocket.series.unit}
                     </div>
                   </div>
-                  <Target className="w-7 h-7 text-cyan-400 opacity-80" />
+                  <Target className="w-7 h-7 text-pink-400 opacity-80" />
                 </div>
 
                 {MODEL_META.map((m) => {
@@ -312,7 +312,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
               </div>
 
               {/* SVG Multi-Model Chart */}
-              <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
+              <div className="rounded-2xl border border-pink-300/20 bg-[#1a0617]/70 p-4">
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex flex-wrap items-center gap-4">
                     {MODEL_META.filter((m) => modelFilter === 'all' || modelFilter === m.key).map(
@@ -435,9 +435,9 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
               </div>
 
               {/* Monthly Data Table by Model */}
-              <div className="overflow-x-auto rounded-2xl border border-white/10">
+              <div className="overflow-x-auto rounded-2xl border border-pink-300/20">
                 <table className="w-full text-center text-xs font-mono">
-                  <thead className="bg-slate-950/80 text-slate-300">
+                  <thead className="bg-[#1a0617]/80 text-slate-300">
                     <tr>
                       <th className="px-3 py-2 text-left font-sans">Model / Bulan</th>
                       {MONTHS.map((m) => (
@@ -447,7 +447,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/10 bg-slate-900/50">
+                  <tbody className="divide-y divide-white/10 bg-[#280b23]/50">
                     {MODEL_META.filter((m) => modelFilter === 'all' || modelFilter === m.key).map(
                       (m) => (
                         <tr key={m.key}>
@@ -487,7 +487,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
           chartModel && (
             <div className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 flex items-center justify-between">
+                <div className="rounded-2xl border border-pink-300/20 bg-white/[0.03] p-3.5 flex items-center justify-between">
                   <div>
                     <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                       Target FY26
@@ -497,7 +497,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                       {pocket.series.target.toFixed(pocket.series.dec)} {pocket.series.unit}
                     </div>
                   </div>
-                  <Target className="w-7 h-7 text-cyan-400 opacity-80" />
+                  <Target className="w-7 h-7 text-pink-400 opacity-80" />
                 </div>
 
                 <div className="rounded-2xl border border-rose-500/25 bg-rose-500/[0.06] p-3.5 flex items-center justify-between">
@@ -537,7 +537,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
+              <div className="rounded-2xl border border-pink-300/20 bg-[#1a0617]/70 p-4">
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-4">
                     {(shiftFilter === 'all' || shiftFilter === 'red') && (
@@ -684,9 +684,9 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                 </svg>
               </div>
 
-              <div className="overflow-x-auto rounded-2xl border border-white/10">
+              <div className="overflow-x-auto rounded-2xl border border-pink-300/20">
                 <table className="w-full text-center text-xs font-mono">
-                  <thead className="bg-slate-950/80 text-slate-300">
+                  <thead className="bg-[#1a0617]/80 text-slate-300">
                     <tr>
                       <th className="px-3 py-2 text-left font-sans">Regu / Bulan</th>
                       {MONTHS.map((m) => (
@@ -696,7 +696,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/10 bg-slate-900/50">
+                  <tbody className="divide-y divide-white/10 bg-[#280b23]/50">
                     {(shiftFilter === 'all' || shiftFilter === 'red') && (
                       <tr>
                         <td className="px-3 py-2 text-left font-sans font-bold text-rose-300">Red</td>
@@ -752,10 +752,10 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
         {/* 2. PROSES KPI (PARETO) */}
         {pocket.template === 'proses' && pocket.causes && (
           <div className="space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4 space-y-3">
+            <div className="rounded-2xl border border-pink-300/20 bg-[#1a0617]/60 p-4 space-y-3">
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <span className="flex items-center gap-1.5 font-semibold text-white">
-                  <BarChart3 className="w-4 h-4 text-cyan-400" />
+                  <BarChart3 className="w-4 h-4 text-pink-400" />
                   Stratifikasi Pareto Penyebab Utama
                 </span>
                 <span className="font-mono">
@@ -800,8 +800,8 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
             </div>
 
             {pocket.conclusion && (
-              <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-xs sm:text-sm text-cyan-100">
-                <span className="font-bold text-cyan-300">Kesimpulan Pareto: </span>
+              <div className="rounded-2xl border border-pink-500/30 bg-pink-500/10 p-4 text-xs sm:text-sm text-pink-100">
+                <span className="font-bold text-pink-300">Kesimpulan Pareto: </span>
                 {pocket.conclusion}
               </div>
             )}
@@ -811,9 +811,9 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
         {/* 3. KAIZEN / LIST PROBLEM */}
         {pocket.template === 'kaizen' && pocket.items && (
           <div className="space-y-4">
-            <div className="overflow-x-auto rounded-2xl border border-white/10">
+            <div className="overflow-x-auto rounded-2xl border border-pink-300/20">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950/80 text-slate-300 uppercase tracking-wider text-[11px]">
+                <thead className="bg-[#1a0617]/80 text-slate-300 uppercase tracking-wider text-[11px]">
                   <tr>
                     <th className="px-3 py-3">No</th>
                     <th className="px-3 py-3">Problem / Temuan</th>
@@ -824,7 +824,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                     <th className="px-3 py-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/10 bg-slate-900/40">
+                <tbody className="divide-y divide-white/10 bg-[#280b23]/40">
                   {filteredKaizenItems.map((item) => (
                     <tr key={item.no} className="hover:bg-white/[0.03] transition">
                       <td className="px-3 py-3 font-mono font-bold text-slate-400">{item.no}</td>
@@ -877,8 +877,8 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                 </div>
                 <p className="mt-1 text-sm font-semibold text-white">{pocket.hoshinMain.coy}</p>
               </div>
-              <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-cyan-300">
+              <div className="rounded-2xl border border-pink-500/30 bg-pink-500/10 p-4">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-pink-300">
                   QAE Direction &amp; Target
                 </div>
                 <p className="mt-1 text-sm font-semibold text-white">{pocket.hoshinMain.dir}</p>
@@ -886,7 +886,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4 space-y-3">
+              <div className="rounded-2xl border border-pink-300/20 bg-[#1a0617]/60 p-4 space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
                   Refleksi FY25
                 </h3>
@@ -902,13 +902,13 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                 ))}
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4 space-y-3">
+              <div className="rounded-2xl border border-pink-300/20 bg-[#1a0617]/60 p-4 space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
                   Strategi Utama FY26
                 </h3>
                 {pocket.hoshinMain.strategy.map((s) => (
                   <div key={s.heading} className="space-y-1">
-                    <div className="text-xs font-bold text-cyan-300">{s.heading}</div>
+                    <div className="text-xs font-bold text-pink-300">{s.heading}</div>
                     <ul className="list-disc pl-4 text-xs text-slate-300 space-y-0.5">
                       {s.items.map((it, i) => (
                         <li key={i}>{it}</li>
@@ -926,7 +926,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                   className={`rounded-2xl border p-3.5 ${
                     k.hl
                       ? 'border-emerald-500/30 bg-emerald-500/10'
-                      : 'border-white/10 bg-white/[0.03]'
+                      : 'border-pink-300/20 bg-white/[0.03]'
                   }`}
                 >
                   <div className="text-sm font-black text-white">{k.label}</div>
@@ -943,9 +943,9 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
 
         {/* 5. HOSHIN ACTION PLAN */}
         {pocket.template === 'hoshin-plan' && pocket.actionPlan && (
-          <div className="overflow-x-auto rounded-2xl border border-white/10">
+          <div className="overflow-x-auto rounded-2xl border border-pink-300/20">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950/80 text-slate-300 text-[11px] uppercase">
+              <thead className="bg-[#1a0617]/80 text-slate-300 text-[11px] uppercase">
                 <tr>
                   <th className="px-3 py-3">No</th>
                   <th className="px-3 py-3">KRA / Pilar</th>
@@ -957,14 +957,14 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
                   <th className="px-3 py-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10 bg-slate-900/40">
+              <tbody className="divide-y divide-white/10 bg-[#280b23]/40">
                 {pocket.actionPlan.map((rowItem) => (
                   <tr key={rowItem.no} className="hover:bg-white/[0.03]">
                     <td className="px-3 py-3 font-mono text-slate-400">{rowItem.no}</td>
                     <td className="px-3 py-3 font-bold text-amber-300">{rowItem.kra}</td>
                     <td className="px-3 py-3 font-semibold text-white">{rowItem.kpiName}</td>
                     <td className="px-3 py-3 font-mono text-emerald-300">{rowItem.target}</td>
-                    <td className="px-3 py-3 font-mono text-cyan-300">{rowItem.current}</td>
+                    <td className="px-3 py-3 font-mono text-pink-300">{rowItem.current}</td>
                     <td className="px-3 py-3 text-slate-300">{rowItem.activity}</td>
                     <td className="px-3 py-3 whitespace-nowrap text-slate-200">{rowItem.pic}</td>
                     <td className="px-3 py-3 whitespace-nowrap">
@@ -993,7 +993,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
             {pocket.kpiTree.map((node) => (
               <div
                 key={node.pillar}
-                className="grid grid-cols-1 md:grid-cols-12 gap-3 rounded-2xl border border-white/10 bg-slate-950/60 p-4 items-center"
+                className="grid grid-cols-1 md:grid-cols-12 gap-3 rounded-2xl border border-pink-300/20 bg-[#1a0617]/60 p-4 items-center"
               >
                 <div className="md:col-span-2 flex items-center gap-2">
                   <Layers className="w-4 h-4 text-amber-400 shrink-0" />
@@ -1023,10 +1023,10 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
             {pocket.strategyGroups.map((g) => (
               <div
                 key={g.letter}
-                className="rounded-2xl border border-white/10 bg-slate-950/60 p-4 space-y-2"
+                className="rounded-2xl border border-pink-300/20 bg-[#1a0617]/60 p-4 space-y-2"
               >
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-xs font-black text-slate-950">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-xs font-black text-white">
                     {g.letter}
                   </span>
                   <span className="font-extrabold text-sm text-white">{g.title}</span>
@@ -1046,7 +1046,7 @@ export default function KpiPaperViewer({ col, row, compact = false }: KpiPaperVi
 
         {/* Footer Note / GL Comment */}
         {pocket.comment && (
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-xs text-slate-300 flex items-center justify-between gap-2">
+          <div className="rounded-xl border border-pink-300/20 bg-white/[0.03] px-4 py-2.5 text-xs text-slate-300 flex items-center justify-between gap-2">
             <span>
               <strong className="text-slate-100">Catatan GL / QAE:</strong> {pocket.comment}
             </span>

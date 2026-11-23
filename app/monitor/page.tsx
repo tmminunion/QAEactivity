@@ -41,9 +41,9 @@ export default function MonitorSlideshowPage() {
   const colMeta = COLUMNS.find((c) => c.slug === current.col);
 
   return (
-    <main className="min-h-dvh bg-[#050811] text-slate-100 flex flex-col px-4 py-4 sm:px-6">
+    <main className="min-h-dvh bg-[#160514] text-slate-100 flex flex-col px-4 py-4 sm:px-6">
       {/* Top TV Control Bar */}
-      <header className="max-w-7xl w-full mx-auto mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 backdrop-blur-xl">
+      <header className="max-w-7xl w-full mx-auto mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-pink-300/20 bg-[#280b23]/80 px-4 py-3 backdrop-blur-xl">
         <div className="flex items-center gap-3">
           <Link
             href="/"
@@ -74,7 +74,7 @@ export default function MonitorSlideshowPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIndex((prev) => (prev - 1 + SLIDES.length) % SLIDES.length)}
-            className="rounded-xl border border-white/10 bg-white/5 p-2 text-slate-200 hover:bg-white/10 cursor-pointer"
+            className="rounded-xl border border-pink-300/20 bg-white/5 p-2 text-slate-200 hover:bg-white/10 cursor-pointer"
             title="Slide Sebelumnya"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -82,7 +82,7 @@ export default function MonitorSlideshowPage() {
 
           <button
             onClick={() => setPlaying((p) => !p)}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-cyan-500 px-3 py-1.5 text-xs font-bold text-slate-950 hover:bg-cyan-400 transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-pink-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-pink-400 transition cursor-pointer"
           >
             {playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
             {playing ? 'Jeda' : 'Putar'}
@@ -90,7 +90,7 @@ export default function MonitorSlideshowPage() {
 
           <button
             onClick={() => setIndex((prev) => (prev + 1) % SLIDES.length)}
-            className="rounded-xl border border-white/10 bg-white/5 p-2 text-slate-200 hover:bg-white/10 cursor-pointer"
+            className="rounded-xl border border-pink-300/20 bg-white/5 p-2 text-slate-200 hover:bg-white/10 cursor-pointer"
             title="Slide Berikutnya"
           >
             <ChevronRight className="h-4 w-4" />
@@ -99,7 +99,7 @@ export default function MonitorSlideshowPage() {
           <select
             value={intervalSec}
             onChange={(e) => setIntervalSec(Number(e.target.value))}
-            className="rounded-xl border border-white/10 bg-slate-950 px-2.5 py-1.5 text-xs font-mono text-slate-200 focus:outline-none"
+            className="rounded-xl border border-pink-300/20 bg-[#1a0617] px-2.5 py-1.5 text-xs font-mono text-slate-200 focus:outline-none"
           >
             <option value={5}>5 dtk</option>
             <option value={8}>8 dtk</option>
@@ -121,7 +121,7 @@ export default function MonitorSlideshowPage() {
             onClick={() => setIndex(i)}
             className={`rounded-full px-3 py-1 text-[11px] font-semibold transition cursor-pointer ${
               i === index
-                ? 'bg-cyan-500 text-slate-950 font-bold'
+                ? 'bg-pink-500 text-white font-bold'
                 : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
             }`}
           >

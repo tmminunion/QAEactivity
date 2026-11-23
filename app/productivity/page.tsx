@@ -30,7 +30,7 @@ export default function ProductivityHubPage() {
   ];
 
   return (
-    <main className="min-h-dvh bg-[#070b14] text-slate-100 px-4 py-6 sm:px-6">
+    <main className="min-h-dvh bg-[#1a0617] text-slate-100 px-4 py-6 sm:px-6">
       <div className="max-w-5xl mx-auto space-y-6">
         <header>
           <Link
@@ -54,7 +54,7 @@ export default function ProductivityHubPage() {
               <Link
                 key={m.href}
                 href={m.href}
-                className="group rounded-3xl border border-white/10 bg-white/[0.04] p-5 hover:bg-white/[0.08] hover:border-cyan-400/40 transition flex flex-col justify-between gap-4"
+                className="group rounded-3xl border border-pink-300/20 bg-white/[0.04] p-5 hover:bg-white/[0.08] hover:border-pink-400/40 transition flex flex-col justify-between gap-4"
               >
                 <div className="flex items-start justify-between">
                   <div
@@ -67,12 +67,12 @@ export default function ProductivityHubPage() {
                   </span>
                 </div>
                 <div>
-                  <h2 className="text-base font-extrabold text-white group-hover:text-cyan-400 transition">
+                  <h2 className="text-base font-extrabold text-white group-hover:text-pink-400 transition">
                     {m.title}
                   </h2>
                   <p className="mt-1 text-xs text-slate-400">{m.sub}</p>
                 </div>
-                <div className="flex items-center justify-end text-xs font-bold text-cyan-400">
+                <div className="flex items-center justify-end text-xs font-bold text-pink-400">
                   Buka <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition" />
                 </div>
               </Link>
