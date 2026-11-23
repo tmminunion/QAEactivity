@@ -235,6 +235,14 @@ export default function QAEActivityHubPage() {
   // 3. Quick Tools QAE
   const quickTools = [
     {
+      title: 'Control Body Fitting',
+      sub: 'Lembar Kontrol Dolly 1A (640A & 560B)',
+      href: '/productivity/body-fitting',
+      icon: Wrench,
+      color: 'from-blue-500 to-cyan-600',
+      badge: 'Productivity',
+    },
+    {
       title: 'Hoshin Statement',
       sub: 'Kebijakan Tahunan & Target QAE FY26',
       href: '/display/hoshin/main',
